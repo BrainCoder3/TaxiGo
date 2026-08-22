@@ -1,0 +1,27 @@
+@baseUrl = http://127.0.0.1:8000/api/v1
+@contentType = application/json
+
+
+POST {{baseUrl}}/auth/register/
+Content-Type: {{contentType}}
+
+{
+    "email": "user1.driver@test.com",
+    "username": "user1_driver",
+    "first_name": "user1",
+    "last_name": "Driver",
+    "phone": "+22670998877",
+    "role": "DRIVER",
+    "password": "TaxiDriver1234",
+    "password_confirm": "TaxiDriver1234"
+}
+
+
+### login driver
+POST {{baseUrl}}/auth/login/
+Content-Type: {{contentType}}
+
+{
+    "email": "user1.driver@test.com",
+    "password": "TaxiDriver1234"
+}

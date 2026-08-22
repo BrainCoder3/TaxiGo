@@ -1,0 +1,105 @@
+@baseUrl = http://127.0.0.1:8000/api/v1
+@contentType = application/json
+
+### 1.INSCRIPTION CLIENT
+
+POST {{baseUrl}}/auth/register/
+Content-Type: {{contentType}}
+
+{
+    "email": "user1.client@test.com",
+    "username": "user1_client",
+    "first_name": "user1",
+    "last_name": "Client",
+    "phone": "+22670112233",
+    "role": "CLIENT",
+    "password": "TaxiGo1234",
+    "password_confirm": "TaxiGo1234"
+}
+
+### register avec verification
+
+POST {{baseUrl}}/auth/register/
+Content-Type: {{contentType}}
+
+{
+    "email": "user6.client@test.com",
+    "username": "user6_client",
+    "first_name": "user6",
+    "last_name": "Client",
+    "phone": "+22670112234",
+    "role": "CLIENT",
+    "password": "TaxiGo1234",
+    "password_confirm": "TaxiGo1234"
+}
+
+### 2.Mot de passe differents
+
+POST {{baseUrl}}/auth/register/
+Content-Type: {{contentType}}
+
+{
+    "email": "bad.password@test.com",
+    "username": "bad_password",
+    "first_name": "Bad",
+    "last_name": "Password",
+    "phone": "+22670000001",
+    "role": "CLIENT",
+    "password": "TaxiGo2026!",
+    "password_confirm": "TaxiGo2027!"
+}
+
+### 3.creation admin
+
+POST {{baseUrl}}/auth/register/
+Content-Type: {{contentType}}
+
+{
+    "email": "fake.admin@test.com",
+    "username": "fake_admin",
+    "first_name": "Fake",
+    "last_name": "Admin",
+    "phone": "+22670000002",
+    "role": "ADMIN",
+    "password": "FakeAdmin2026!",
+    "password_confirm": "FakeAdmin2026!"
+}
+
+
+### 4.login client sans verification
+
+POST {{baseUrl}}/auth/login/
+Content-Type: {{contentType}}
+
+{
+    "email": "user1@test.com",
+    "password": "TaxiGo1234"
+}
+
+### 4.login client  verifiee
+
+POST {{baseUrl}}/auth/login/
+Content-Type: {{contentType}}
+
+{
+    "email": "user6.client@test.com",
+    "password": "TaxiGo1234"
+}
+
+### login avec mauvais mot de passe
+
+POST {{baseUrl}}/auth/login/
+Content-Type: {{contentType}}
+
+{
+    "email": "user6.client@test.com",
+    "password": "MauvaisPassword123"
+}
+
+### Mon Compte
+
+GET {{baseUrl}}/auth/me/
+
+### logout
+
+POST {{baseUrl}}/auth/logout/
