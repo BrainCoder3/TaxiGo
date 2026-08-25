@@ -19,21 +19,38 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from .authentication import enforce_csrf
+
 from .models import User
 from .serializers import (
     UserRegistrationSerializer,
     UserSerializer,
 )
 from .tokens import email_verification_token
-
+from django.middleware.csrf import get_token
 
 # Create your views here.
+
+
+
 
 COOKIE_KWARGS = {
     "httponly": True,
     "secure": not settings.DEBUG,
     "samesite": "Lax",
 }
+
+
+class CSRFTokenView(APIView):
+    permission_classes =[AllowAny]
+
+    def get(self,request):
+        token = get_token(request)
+
+        return Response({
+            "csrfToken":token
+        })
+
 
 def set_auth_cookies(response, refresh):
     response.set_cookie(
@@ -64,7 +81,7 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-
+        enforce_csrf(request)
         serializer = UserRegistrationSerializer(
             data=request.data
         )
@@ -94,6 +111,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        enforce_csrf(request)
         email = request.data.get("email")
         password = request.data.get("password")
 
@@ -158,6 +176,7 @@ class RefreshView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        enforce_csrf(request)
         refresh_token = request.COOKIES.get(
             settings.SIMPLE_JWT_REFRESH_COOKIE
         )
@@ -196,6 +215,8 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+
+        enforce_csrf(request)
         refresh_token = request.COOKIES.get(
             settings.SIMPLE_JWT_REFRESH_COOKIE
         )

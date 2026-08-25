@@ -9,7 +9,7 @@ class User(AbstractUser):
         CLIENT = "CLIENT", "Passager"
         DRIVER = "DRIVER", "Chauffeur"
         ADMIN = "ADMIN", "Administrateur"
-    id = models.UUIDField(primary_key=True,default=uuid.uuid7,editable=True)
+    id = models.UUIDField(primary_key=True,default=uuid.uuid7,editable=False)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=30)
     role = models.CharField(max_length=30, choices=RoleType.choices,default=RoleType.CLIENT)

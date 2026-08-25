@@ -1,0 +1,114 @@
+@baseUrl = http://127.0.0.1:8000/api/v1
+
+### 1. Récupérer le token CSRF
+# @name csrf
+GET {{baseUrl}}/auth/csrf/
+
+#####
+### 2. Inscription chauffeur
+POST http://127.0.0.1:8000/api/v1/auth/register/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "email": "mariam.sawadogo@taxigo.test",
+    "username": "mariam_driver",
+    "first_name": "Mariam",
+    "last_name": "Sawadogo",
+    "phone": "+22676084519",
+    "role": "DRIVER",
+    "password": "MariamTaxi2026!",
+    "password_confirm": "MariamTaxi2026!"
+}
+
+####
+
+POST http://127.0.0.1:8000/api/v1/auth/login/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "email": "mariam.sawadogo@taxigo.test",
+    "password": "MariamTaxi2026!"
+}
+#####
+
+POST http://127.0.0.1:8000/api/v1/drivers/me/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "license_number": "BF-OUA-784512"
+}
+
+####
+
+PATCH http://127.0.0.1:8000/api/v1/drivers/me/position/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "latitude": 12.371427,
+    "longitude": -1.519660
+}
+
+#####
+
+PATCH http://127.0.0.1:8000/api/v1/drivers/me/status/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "availability_status": "AVAILABLE"
+}
+
+####
+
+PATCH http://127.0.0.1:8000/api/v1/drivers/me/status/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "availability_status": "ON_A_RIDE"
+}
+
+#####
+
+PATCH http://127.0.0.1:8000/api/v1/drivers/me/status/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "availability_status": "UNAVAILABLE"
+}
+
+####
+
+POST http://127.0.0.1:8000/api/v1/vehicles/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "brand": "Toyota",
+    "model": "Corolla",
+    "registration_number": "11 JK 4587",
+    "seats": 5,
+    "vehicle_type": "SEDAN"
+}
+
+####
+
+GET http://127.0.0.1:8000/api/v1/vehicles/
+
+####
+
+PATCH http://127.0.0.1:8000/api/v1/vehicles/01a03a9f-6056-73d5-9d70-addf1cdf5642/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "brand": "Toyota",
+    "model": "Corolla Hybrid",
+    "seats": 5,
+    "vehicle_type": "HYBRID"
+}

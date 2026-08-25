@@ -1,105 +1,190 @@
 @baseUrl = http://127.0.0.1:8000/api/v1
 @contentType = application/json
 
-### 1.INSCRIPTION CLIENT
 
+#####
+# 0. RECUPERER LE TOKEN CSRF
+##########
+
+# @name csrf
+GET {{baseUrl}}/auth/csrf/
+
+
+##########
+# 1. INSCRIPTION CLIENT NON VERIFIE
+
+#######
 POST {{baseUrl}}/auth/register/
 Content-Type: {{contentType}}
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
 
 {
-    "email": "user1.client@test.com",
-    "username": "user1_client",
-    "first_name": "user1",
-    "last_name": "Client",
-    "phone": "+22670112233",
+    "email": "client20@taxigo.test",
+    "username": "client20",
+    "first_name": "Amadou",
+    "last_name": "Traore",
+    "phone": "+22670102030",
     "role": "CLIENT",
     "password": "TaxiGo1234",
     "password_confirm": "TaxiGo1234"
 }
 
-### register avec verification
 
+#########
+# 2. INSCRIPTION CLIENT A VERIFIER
+####
 POST {{baseUrl}}/auth/register/
 Content-Type: {{contentType}}
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
 
 {
-    "email": "user6.client@test.com",
-    "username": "user6_client",
-    "first_name": "user6",
-    "last_name": "Client",
-    "phone": "+22670112234",
+    "email": "client21@taxigo.test",
+    "username": "client21",
+    "first_name": "Awa",
+    "last_name": "Ouedraogo",
+    "phone": "+22670102031",
     "role": "CLIENT",
     "password": "TaxiGo1234",
     "password_confirm": "TaxiGo1234"
 }
 
-### 2.Mot de passe differents
+
+#########
+# 3. INSCRIPTION CHAUFFEUR
 
 POST {{baseUrl}}/auth/register/
 Content-Type: {{contentType}}
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
 
 {
-    "email": "bad.password@test.com",
-    "username": "bad_password",
+    "email": "driver20@taxigo.test",
+    "username": "driver20",
+    "first_name": "Moussa",
+    "last_name": "Kaboré",
+    "phone": "+22670203040",
+    "role": "DRIVER",
+    "password": "TaxiDriver1234",
+    "password_confirm": "TaxiDriver1234"
+}
+
+
+####################
+# 4. TEST : MOTS DE PASSE DIFFERENTS
+
+POST {{baseUrl}}/auth/register/
+Content-Type: {{contentType}}
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "email": "badpassword20@taxigo.test",
+    "username": "badpassword20",
     "first_name": "Bad",
     "last_name": "Password",
-    "phone": "+22670000001",
+    "phone": "+22670304050",
     "role": "CLIENT",
-    "password": "TaxiGo2026!",
-    "password_confirm": "TaxiGo2027!"
+    "password": "TaxiGo1234",
+    "password_confirm": "TaxiGo9999"
 }
 
-### 3.creation admin
+
+##########
+# 5. TEST : CREATION ADMIN
 
 POST {{baseUrl}}/auth/register/
 Content-Type: {{contentType}}
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
 
 {
-    "email": "fake.admin@test.com",
-    "username": "fake_admin",
+    "email": "fakeadmin20@taxigo.test",
+    "username": "fakeadmin20",
     "first_name": "Fake",
     "last_name": "Admin",
-    "phone": "+22670000002",
+    "phone": "+22670405060",
     "role": "ADMIN",
-    "password": "FakeAdmin2026!",
-    "password_confirm": "FakeAdmin2026!"
+    "password": "FakeAdmin1234",
+    "password_confirm": "FakeAdmin1234"
 }
 
 
-### 4.login client sans verification
+########
+# 6. LOGIN CLIENT NON VERIFIE
 
 POST {{baseUrl}}/auth/login/
 Content-Type: {{contentType}}
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
 
 {
-    "email": "user1@test.com",
+    "email": "client20@taxigo.test",
     "password": "TaxiGo1234"
 }
 
-### 4.login client  verifiee
+
+#########
+# 7. VERIFICATION EMAIL
+
+# GET http://127.0.0.1:8000/api/v1/auth/verify-email/REMPLACE_UID/REMPLACE_TOKEN/
+
+
+########
+# 8. LOGIN CLIENT VERIFIE
 
 POST {{baseUrl}}/auth/login/
 Content-Type: {{contentType}}
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
 
 {
-    "email": "user6.client@test.com",
+    "email": "client21@taxigo.test",
     "password": "TaxiGo1234"
 }
 
-### login avec mauvais mot de passe
+
+############################################################
+# 9. LOGIN AVEC MAUVAIS MOT DE PASSE
 
 POST {{baseUrl}}/auth/login/
 Content-Type: {{contentType}}
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
 
 {
-    "email": "user6.client@test.com",
-    "password": "MauvaisPassword123"
+    "email": "client21@taxigo.test",
+    "password": "MauvaisPassword999"
 }
 
-### Mon Compte
+
+############################################################
+# 10. MON COMPTE
 
 GET {{baseUrl}}/auth/me/
 
-### logout
+
+############################################################
+# 11. REFRESH JWT
+
+POST {{baseUrl}}/auth/refresh/
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+
+############################################################
+# 12. MON COMPTE APRES REFRESH
+
+GET {{baseUrl}}/auth/me/
+
+
+############################################################
+# 13. LOGOUT
 
 POST {{baseUrl}}/auth/logout/
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+
+############################################################
+# 14. MON COMPTE APRES LOGOUT
+
+GET {{baseUrl}}/auth/me/
+
+
+#####
+# 15. REFRESH APRES LOGOUT
+
+POST {{baseUrl}}/auth/refresh/
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
