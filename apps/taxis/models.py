@@ -63,6 +63,7 @@ class Driver(models.Model):
 
     class Meta:
         ordering = ["-created_at", "license_number"]
+       
 
     def __str__(self):
         return f"{self.license_number} - {self.availability_status}"

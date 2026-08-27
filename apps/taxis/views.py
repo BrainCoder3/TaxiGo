@@ -2,11 +2,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+
+from apps.commandes.permissions import IsPassenger
 from .permissions import IsDriver,IsDriverOrAdmin, IsVehicleOwnerOrAdmin
-from .serializers import DriverCreateSerializer, DriverSerializer,DriverPositionSerializer,DriverStatusSerializer, VehicleSerializer
+from .serializers import DriverCreateSerializer, DriverSerializer,DriverPositionSerializer,DriverStatusSerializer, VehicleSerializer,NearbyDriversQuerySerializer, NearbyDriverSerializer
 from .models import Driver, Vehicle
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import ValidationError
+from apps.taxis.utils import haversine_distance
+from decimal import Decimal
 # Create your views here.
 
 class DriverMeView(APIView):
@@ -113,3 +117,77 @@ class VehicleViewSet(ModelViewSet):
                 )
         serializer.save(driver=driver)
         
+
+class NearbyDriversView(APIView):
+
+    permission_classes = [
+        IsAuthenticated,
+        IsPassenger,
+    ]
+
+    def get(self, request):
+
+        query_serializer = NearbyDriversQuerySerializer(
+            data=request.query_params
+        )
+
+        query_serializer.is_valid(
+            raise_exception=True
+        )
+
+        passenger_lat = query_serializer.validated_data["lat"]
+        passenger_lon = query_serializer.validated_data["lon"]
+        limit = query_serializer.validated_data["limit"]
+
+        radius = query_serializer.validated_data.get(
+            "radius"
+        )
+
+        drivers = Driver.objects.filter(
+            availability_status=Driver.StatusType.AVAILABLE,
+            latitude__isnull=False,
+            longitude__isnull=False,
+        )
+
+        results = []
+
+        for driver in drivers:
+
+            distance = haversine_distance(
+                passenger_lat,
+                passenger_lon,
+                driver.latitude,
+                driver.longitude,
+            )
+
+            distance = Decimal(str(distance)).quantize(
+                Decimal("0.001")
+            )
+
+            if radius is not None and distance > radius:
+                continue
+
+            results.append({
+                "id": driver.id,
+                "latitude": driver.latitude,
+                "longitude": driver.longitude,
+                "distance_km": distance,
+            })
+
+        # Ici on est SORTI de la boucle
+
+        results.sort(
+            key=lambda item: item["distance_km"]
+        )
+
+        results = results[:limit]
+
+        serializer = NearbyDriverSerializer(
+            results,
+            many=True
+        )
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )

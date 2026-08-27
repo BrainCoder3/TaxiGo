@@ -1,0 +1,112 @@
+@baseUrl = http://127.0.0.1:8000/api/v1
+@rideId = 01a0430a-1092-7541-8b4b-5fa1b985247f
+
+
+### 1. Récupérer le token CSRF
+# @name csrf
+GET {{baseUrl}}/auth/csrf/
+
+#####
+
+### 2. Inscription d'un PASSAGER
+POST {{baseUrl}}/auth/register/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "email": "adama.traore@taxigo.test",
+    "username": "adama_client",
+    "first_name": "Adama",
+    "last_name": "Traore",
+    "phone": "+22676123487",
+    "role": "CLIENT",
+    "password": "AdamaTaxi2026!",
+    "password_confirm": "AdamaTaxi2026!"
+}
+
+#####
+
+### 3. Vérifier l'email
+### Ouvrir manuellement le lien de vérification affiché dans le terminal Django
+
+#####
+
+### 4. Connexion du passager
+POST {{baseUrl}}/auth/login/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "email": "adama.traore@taxigo.test",
+    "password": "AdamaTaxi2026!"
+}
+
+#####
+
+### 5. Créer une course
+POST {{baseUrl}}/rides/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "departure_latitude": 12.371427,
+    "departure_longitude": -1.519660,
+    "arrival_latitude": 12.402100,
+    "arrival_longitude": -1.483000
+}
+
+#####
+
+### 6. Récupérer les courses du passager connecté
+GET {{baseUrl}}/rides/
+
+#####
+
+### 7. Récupérer une course précise
+### Copier l'id obtenu dans GET /rides/ et le mettre dans @rideId en haut
+GET {{baseUrl}}/rides/{{rideId}}/
+
+#####
+
+### 8. Essayer de créer une deuxième course active
+### ATTENDU : 400 Bad Request
+POST {{baseUrl}}/rides/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "departure_latitude": 12.380000,
+    "departure_longitude": -1.510000,
+    "arrival_latitude": 12.410000,
+    "arrival_longitude": -1.470000
+}
+
+#####
+
+### 9. Latitude invalide
+### ATTENDU : 400 Bad Request
+POST {{baseUrl}}/rides/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "departure_latitude": 120.000000,
+    "departure_longitude": -1.519660,
+    "arrival_latitude": 12.402100,
+    "arrival_longitude": -1.483000
+}
+
+#####
+
+### 10. Longitude invalide
+### ATTENDU : 400 Bad Request
+POST {{baseUrl}}/rides/
+Content-Type: application/json
+X-CSRFToken: {{csrf.response.body.$.csrfToken}}
+
+{
+    "departure_latitude": 12.371427,
+    "departure_longitude": -250.000000,
+    "arrival_latitude": 12.402100,
+    "arrival_longitude": -1.483000
+}

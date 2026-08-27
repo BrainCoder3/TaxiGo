@@ -87,4 +87,62 @@ class VehicleSerializer(serializers.ModelSerializer):
 
     def validate_registration_number(self,value):
         return value.strip().upper()
-    
+
+
+
+class NearbyDriversQuerySerializer(serializers.Serializer):
+    lat = serializers.DecimalField(
+        max_digits=9,
+        decimal_places=6
+    )
+
+    lon = serializers.DecimalField(
+        max_digits=9,
+        decimal_places=6
+    )
+
+    limit = serializers.IntegerField(
+        required=False,
+        default=5,
+        min_value=1,
+        max_value=10
+    )
+
+    radius = serializers.DecimalField(
+        required=False,
+        max_digits=8,
+        decimal_places=2,
+        min_value=0
+    )
+
+    def validate_lat(self, value):
+        if value < -90 or value > 90:
+            raise serializers.ValidationError(
+                "Latitude must be between -90 and 90."
+            )
+
+        return value
+
+    def validate_lon(self, value):
+        if value < -180 or value > 180:
+            raise serializers.ValidationError(
+                "Longitude must be between -180 and 180."
+            )
+
+        return value
+
+
+class NearbyDriverSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    latitude = serializers.DecimalField(
+        max_digits=9,
+        decimal_places=6
+    )
+    longitude = serializers.DecimalField(
+        max_digits=9,
+        decimal_places=6
+    )
+    distance_km = serializers.DecimalField(
+        max_digits=9,
+        decimal_places=3
+    )

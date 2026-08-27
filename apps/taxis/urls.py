@@ -7,6 +7,7 @@ from .views import (
     DriverPositionView,
     DriverStatusView,
     VehicleViewSet,
+    NearbyDriversView
 )
 
 router = DefaultRouter()
@@ -20,7 +21,12 @@ router.register(
 urlpatterns = [
     path("drivers/me/",DriverMeView.as_view(),name="driver-me"),
     path("drivers/me/position/",DriverPositionView.as_view(),name="driver-position",),
-    path("drivers/me/status/",DriverStatusView.as_view(),name="driver-status")
+    path("drivers/me/status/",DriverStatusView.as_view(),name="driver-status"),
+    path(
+        "drivers/nearby/",
+        NearbyDriversView.as_view(),
+        name="nearby-drivers",
+    ),
 ]
 
 urlpatterns += router.urls
